@@ -11,4 +11,4 @@ After uploading, you can also clean up all generated files.
 
 #### Important! Selected project folder should contain the ```__init__.py``` file! This is the main file of your library.
 
-<img src="image2.png"></img>
+<img src="Image.png"></img>
