@@ -14,4 +14,13 @@ After uploading, program can also clean up all generated files.
 
 #### Important! Selected project folder should contain the ```__init__.py``` file! This is the main file of your library.
 
+#### Folder hierarchy:
+```
+.../Any_Name
+    |_Pypi-uploader.py
+    |_Your_Project_Folder/
+       |_ __init__.py
+       |_Other_files... 
+```
+
 <img src="Image.png"></img>
