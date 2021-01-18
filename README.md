@@ -16,11 +16,11 @@ After uploading, program can also clean up all generated files.
 
 #### Folder hierarchy:
 ```
-.../Any_Name
-    |_Pypi-uploader.py
-    |_Your_Project_Folder/
-       |_ __init__.py
-       |_Other_files... 
+.../Any_folder_name
+     |__Pypi-uploader.py
+     |__Your_Project_Folder/
+         |__ __init__.py
+         |__Other_files... 
 ```
 
 <img src="Image.png"></img>
