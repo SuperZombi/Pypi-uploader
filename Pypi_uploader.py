@@ -104,7 +104,7 @@ if values["readme"] != "":
 if values["github"] != "":
 	comand += "	url='" + str(values["github"]) + "',\n"
 
-comand += "	packages=[r'" + str(values["folder"].replace("/", "\\")) + "'],\n"
+comand += "	packages=['" + str(path[len(path)-1]) + "'],\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
 comand += "	python_requires='>=3.6',\n)"
 
