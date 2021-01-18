@@ -3,7 +3,7 @@
 
 </br>
 
-This program is written using the PySimpleGUI library.
+This program is written using the <a href="https://pypi.org/project/PySimpleGUI/">PySimpleGUI</a> library.
 
 Just run <a href="Pypi_uploader.py">Pypi_uploader.py</a> and follow the instructions on the screen.</br>
 The program will automatically install the necessary libraries, compile your project into an archive and upload it to Pypi or Test Pypi.</br>
