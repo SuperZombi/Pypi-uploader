@@ -21,7 +21,7 @@ except:
 sg.theme('DarkAmber')
 window_title = "Pypi uploader"
 
-main = [[sg.T("Select folder: ", font='16'), sg.FolderBrowse("Browse", target='folder', font='12')],
+main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", target='folder', font='12')],
 		[sg.Input("", size=(40,1), key="folder")],
 		[sg.T("Important!\nThis folder should contain the __init__.py file!\n", text_color="red", font='Courier 12')],
 		[sg.T("Load to:", font='16')],
