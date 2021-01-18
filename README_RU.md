@@ -3,6 +3,7 @@
 
 </br>
 <a href="README.md" ><img src="https://emojio.ru/images/twitter-64/1f1fa-1f1f8.png" width="30" height="30"></img>Read in English</a>
+</br></br>
 
 Эта программа написана с помощью библиотеки <a href="https://pypi.org/project/PySimpleGUI/">PySimpleGUI</a>.
 
