@@ -29,3 +29,10 @@ After uploading, program can also clean up all generated files.
 
 **Username:** ```__token__``` </br>
 **Password:** *The token value, including the ```pypi-``` prefix*
+
+### Possible mistakes:
+<ul>
+<li> Login or password is incorrect (or API token if you uploaded through it). </li>
+<li> You signed up for PyPi, and you are trying to upload a project to Test Pypi (or vice versa). </li>
+<li> A library with this name already exists. So if this is your library - change the version. </li>
+</ul>
