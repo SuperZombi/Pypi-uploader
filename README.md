@@ -27,5 +27,5 @@ After uploading, program can also clean up all generated files.
 
 #### If you are using api key
 
-Username: ```__token__``` </br>
-Password: *The token value, including the ```pypi-``` prefix*
+**Username:** ```__token__``` </br>
+**Password:** *The token value, including the ```pypi-``` prefix*
