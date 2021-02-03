@@ -24,3 +24,8 @@ After uploading, program can also clean up all generated files.
 ```
 
 <img src="Image.png"></img>
+
+#### If you are using api key
+
+Username: ```__token__``` </br>
+Password: *The token value, including the ```pypi-``` prefix*
