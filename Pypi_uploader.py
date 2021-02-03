@@ -127,7 +127,7 @@ with open(str(folder) + "setup.cfg", 'w') as file:
 window['text'].update("Generating distribution archives...")
 window.Refresh()
 
-os.system("python " + str(folder) + "setup.py sdist bdist_wheel")
+os.system("python setup.py sdist bdist_wheel")
 sleep(1)
 
 window['text'].update("Uploading files...")
