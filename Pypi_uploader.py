@@ -18,6 +18,11 @@ try:
 except:
 	os.system("pip install twine")
 
+try:
+	import wheel
+except:
+	os.system("pip install wheel")
+
 sg.theme('DarkAmber')
 window_title = "Pypi uploader"
 
