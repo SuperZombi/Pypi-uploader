@@ -18,6 +18,7 @@ After uploading, program can also clean up all generated files.
 ```
 .../Any_folder_name
      |__Pypi-uploader.py
+     |__requirements.txt (optional)
      |__Your_Project_Folder/
          |__ __init__.py
          |__Other_files... 
