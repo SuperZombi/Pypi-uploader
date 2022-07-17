@@ -90,6 +90,12 @@ for i in range (len(path)-1):
 		break
 	folder += "/"
 
+
+required = []
+if os.path.exists('requirements.txt'):
+	with open('requirements.txt', 'r') as file:
+		required = file.readlines()
+
 comand = "import setuptools\n"
 if values["readme"] != "":
 	comand += "with open(r'" + str(values["readme"].replace("/", "\\")) + "', 'r', encoding='utf-8') as fh:\n"
@@ -111,6 +117,8 @@ if values["github"] != "":
 
 comand += "	packages=['" + str(path[len(path)-1]) + "'],\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
+if required:
+	comand += f"	install_requires={required},\n"
 comand += "	python_requires='>=3.6',\n)"
 
 
@@ -127,6 +135,9 @@ with open(str(folder) + "setup.py", 'w', encoding='utf-8') as file:
 
 with open(str(folder) + "setup.cfg", 'w') as file:
 	file.write("[egg_info]\ntag_build = \ntag_date = 0")
+
+with open(str(folder) + "MANIFEST.in", 'w') as file:
+	file.write(f"include {path[len(path)-1]}/*")
 
 
 window['text'].update("Generating distribution archives...")
