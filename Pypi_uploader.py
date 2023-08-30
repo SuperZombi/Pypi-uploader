@@ -116,6 +116,7 @@ if values["github"] != "":
 	comand += "	url='" + str(values["github"]) + "',\n"
 
 comand += "	packages=['" + str(path[len(path)-1]) + "'],\n"
+comand += "	include_package_data=True,\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
 if required:
 	comand += f"	install_requires={required},\n"
@@ -137,7 +138,7 @@ with open(str(folder) + "setup.cfg", 'w') as file:
 	file.write("[egg_info]\ntag_build = \ntag_date = 0")
 
 with open(str(folder) + "MANIFEST.in", 'w') as file:
-	file.write(f"include {path[len(path)-1]}/*")
+	file.write(f"recursive-include {path[len(path)-1]} *")
 
 
 window['text'].update("Generating distribution archives...")
@@ -162,10 +163,10 @@ if delete_temp_files:
 
 	shutil.rmtree('build')
 	shutil.rmtree("dist")
-	print(str(package_name) + ".egg-info")
 	shutil.rmtree(str(package_name) + ".egg-info")
 	os.remove(str(folder) + "setup.cfg")
 	os.remove(str(folder) + "setup.py")
+	os.remove(str(folder) + "MANIFEST.in")
 
 window['text'].update("Uploaded successfully!")
 window.Refresh()
