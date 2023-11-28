@@ -37,12 +37,13 @@ main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", t
 		[sg.T("Select README.md file: ", font='12')],
 		[sg.Input("", size=(37,1), key="readme"), sg.FileBrowse("Browse", file_types=(("Markdown File", "*.md"),), target='readme', font='12'), sg.T("(Optional)", text_color="yellow", font='Arial 12')],[sg.T("")],
 		[sg.T("Your username:   ", font='12'), sg.Input("", size=(26,1), key="username")],
-		[sg.T("Your password:   ", font='12'), sg.Input("", size=(26,1), key="password", password_char='*'),sg.I("", size=(26,1),visible=False, key="pass_show"), sg.B("Show", key="Show")],
+		[sg.T("Your password:   ", font='12', key="password_text"), sg.Input("", size=(26,1), key="password", password_char='*'), sg.B("Show", key="show-hide")],
+		[sg.Checkbox("token", font='12', key="token", enable_events=True)],
 		[sg.T("Your email:          ", font='12'), sg.Input("", size=(26,1), key="email")],
 		[sg.T("Github repository: ", font='12'), sg.Input("", size=(26,1), key="github"), sg.T("(Optional)", text_color="yellow", font='Arial 12')],[sg.T("")],
 		[sg.T("Delete all created files, folders and archives after upload?", font='Segoe 14')],
 		[sg.Radio("Yes", 2, default=False, key="delete_yes", font='Segoe 12'), sg.Radio("No", 2, default=True, key="delete_no", font='Segoe 12')],
-		[sg.T("")],[sg.T("						"), sg.OK("Upload", font='12')]]
+		[sg.Push(), sg.OK("Upload", font='12'), sg.Push()]]
 
 
 layout = [[sg.Column(main, size=(500,600), scrollable=True, vertical_scroll_only=True)]]
@@ -55,16 +56,20 @@ while True:
 	if event == sg.WIN_CLOSED:
 		sys.exit()
 
-	if event == "Show":
+	if event == "show-hide":
 		showing = not showing
 		if showing == True:
-			window['pass_show'].update(values["password"], visible=True)
-			window['password'].update(visible=False)
-			window["Show"].update("Hide")
+			window['password'].update(password_char='')
+			window["show-hide"].update("Hide")
 		else:
-			window['pass_show'].update(visible=False)
-			window['password'].update(values["pass_show"], visible=True)
-			window["Show"].update("Show")
+			window['password'].update(password_char="*")
+			window["show-hide"].update("Show")
+
+	elif event == "token":
+		if values["token"]:
+			window["password_text"].update("Your API token:   ")
+		else:
+			window["password_text"].update("Your password:   ")
 
 	if event == "Upload":
 		break
@@ -72,10 +77,8 @@ while True:
 upload_to_pypi = values["pypi"]
 upload_to_test_pypi = values["test_pypi"]
 username = values["username"]
-if showing == True:
-	password = values["pass_show"]
-else:
-	password = values["password"]
+password = values["password"]
+userlogin = "__token__" if values["token"] else values["username"]
 
 delete_temp_files = False
 if values["delete_yes"] == True:
@@ -152,9 +155,9 @@ window.Refresh()
 
 
 if upload_to_pypi:
-	os.system("python -m twine upload dist/* -u " + str(username) + " -p " + str(password))
+	os.system("python -m twine upload dist/* -u " + str(userlogin) + " -p " + str(password))
 else:
-	os.system("python -m twine upload --repository testpypi dist/* -u " + str(username) + " -p " + str(password))
+	os.system("python -m twine upload --repository testpypi dist/* -u " + str(userlogin) + " -p " + str(password))
 
 
 if delete_temp_files:
