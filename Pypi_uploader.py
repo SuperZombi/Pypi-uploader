@@ -2,6 +2,8 @@ import sys
 import os
 import shutil
 from time import sleep
+import json
+from tkinter.filedialog import askopenfilename, asksaveasfilename
 try:
 	import PySimpleGUI as sg
 except:
@@ -29,6 +31,28 @@ def infinite(start=0):
 		yield start
 		start += 1
 
+def load_project(window, filename):
+	with open(filename, 'r', encoding='utf-8') as file:
+		data = json.load(file)
+	for key, value in data.items():
+		if key in window.AllKeysDict:
+			window[key].update(value)
+		else:
+			if key == "dependencies":
+				add_dependencies(window, value)
+
+def save_project(filename, data):
+	allowed_keys = ['folder', 'package_name', 'version', 'description', 'readme', 'username', 'email', 'github']
+	final = {key: value for key, value in data.items() if key in allowed_keys and value}
+
+	dependencies = {value for key, value in data.items() if isinstance(key, tuple) and 'dependency' in key[0] and value}
+	if len(dependencies) > 0:
+		final["dependencies"] = list(dependencies)
+
+	with open(filename, 'w', encoding='utf-8') as file:
+		file.write(json.dumps(final, indent=4))
+
+
 sg.theme('DarkAmber')
 window_title = "Pypi uploader"
 
@@ -54,7 +78,10 @@ main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", t
 		[sg.Push(), sg.OK("Upload", font='12'), sg.Push()]]
 
 
-layout = [[sg.Column(main, size=(500,600), scrollable=True, vertical_scroll_only=True, key="__main__")]]
+layout = [
+	[sg.Menu([['File config', ['Import', 'Export']]], text_color=sg.theme_text_color(), background_color=sg.theme_background_color())],
+	[sg.Column(main, size=(500,600), scrollable=True, vertical_scroll_only=True, key="__main__")]
+]
 
 window = sg.Window(window_title, layout, finalize=True)
 
@@ -71,9 +98,23 @@ def update_window_height(root, scrollzone):
 	window_height = root.TKColFrame.TKFrame.winfo_reqheight()
 	root.set_size((500, window_height))
 
+def add_dependencies(window, array=None):
+	if not array: array = [""]
+	for value in array:
+		item_num = next(dep_index)
+		window.extend_layout(window['-dependencies-'],[[sg.pin(
+			sg.Col([[sg.B(sg.SYMBOL_X, k=('remove_dependency', item_num), border_width=0, button_color=(sg.theme_text_color(), sg.theme_background_color())),
+					 sg.Input(value, size=(37,1), k=('dependency', item_num)),
+			]], k=('dependency_item', item_num)))
+		]])
+	window.refresh()
+	update_window_height(window['__main__'], window['-dependencies-'])
+	button_pointer()
+
 button_pointer()
 dep_index = infinite(1)
 showing = False
+
 while True:
 	event, values = window.read()
 
@@ -96,15 +137,7 @@ while True:
 			window["password_text"].update("Your password:   ")
 
 	elif event == "add_dependency":
-		item_num = next(dep_index)
-		window.extend_layout(window['-dependencies-'],[[sg.pin(
-			sg.Col([[sg.B(sg.SYMBOL_X, k=('remove_dependency', item_num), border_width=0, button_color=(sg.theme_text_color(), sg.theme_background_color())),
-                     sg.Input("", size=(37,1), k=('dependency', item_num)),
-            ]], k=('dependency_item', item_num)))
-		]])
-		window.refresh()
-		update_window_height(window['__main__'], window['-dependencies-'])
-		button_pointer()
+		add_dependencies(window)
 	
 	elif event[0] == 'remove_dependency':
 		window[('dependency_item', event[1])].update(visible=False)
@@ -114,13 +147,20 @@ while True:
 
 	if event == "Upload":
 		break
+	elif event == "Import":
+		file = askopenfilename(filetypes=[("Project config", "*.build *.config *.json"), ("All files", "*.*")])
+		if file: load_project(window, file)
+
+	elif event == "Export":
+		file = asksaveasfilename(defaultextension='.build', filetypes=[(".build", ".build"), (".config", ".config"), (".json", ".json")])
+		if file: save_project(file, values)
 
 upload_to_pypi = values["pypi"]
 upload_to_test_pypi = values["test_pypi"]
 username = values["username"]
 password = values["password"]
 userlogin = "__token__" if values["token"] else values["username"]
-dependencies = {value for key, value in values.items() if 'dependency' in key[0] and value}
+dependencies = {value for key, value in values.items() if isinstance(key, tuple) and 'dependency' in key[0] and value}
 
 delete_temp_files = False
 if values["delete_yes"] == True:
