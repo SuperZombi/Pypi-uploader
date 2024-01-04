@@ -175,12 +175,6 @@ for i in range (len(path)-1):
 		break
 	folder += "/"
 
-
-required = []
-if os.path.exists('requirements.txt'):
-	with open('requirements.txt', 'r') as file:
-		required = file.readlines()
-
 comand = "import setuptools\n"
 if values["readme"] != "":
 	comand += "with open(r'" + str(values["readme"].replace("/", "\\")) + "', 'r', encoding='utf-8') as fh:\n"
@@ -206,11 +200,13 @@ if len(dependencies) > 0:
 	comand += "	install_requires=["
 	comand += ', '.join(f'"{item}"' for item in dependencies)
 	comand += "],\n"
+elif os.path.exists('requirements.txt'):
+	with open('requirements.txt', 'r') as file:
+		required = file.readlines()
+		comand += f"	install_requires={required},\n"
 
 comand += "	include_package_data=True,\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
-if required:
-	comand += f"	install_requires={required},\n"
 comand += "	python_requires='>=3.6',\n)"
 
 
