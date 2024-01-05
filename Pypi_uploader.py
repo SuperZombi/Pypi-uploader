@@ -57,7 +57,7 @@ sg.theme('DarkAmber')
 window_title = "Pypi uploader"
 
 main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", target='folder', font='12')],
-		[sg.Input("", size=(40,1), key="folder")],
+		[sg.Input("", size=(40,1), key="folder", enable_events=True)],
 		[sg.T("Important!\nThis folder should contain the __init__.py file!\n", text_color="red", font='Courier 12')],
 		[sg.T("Load to:", font='16')],
 		[sg.Radio("Pypi", 0, default=False, key="pypi", font='Segoe 12'), sg.Radio("Test Pypi", 0, default=True, key="test_pypi", font='Segoe 12')],[sg.T("")],
@@ -79,7 +79,7 @@ main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", t
 
 
 layout = [
-	[sg.Menu([['File config', ['Import', 'Export']]], text_color=sg.theme_text_color(), background_color=sg.theme_background_color())],
+	[sg.Menu([['Project', ['Import', 'Export']], ['Requirements', ['Select file::requirements']]], text_color=sg.theme_text_color(), background_color=sg.theme_background_color())],
 	[sg.Column(main, size=(500,600), scrollable=True, vertical_scroll_only=True, key="__main__")]
 ]
 
@@ -111,9 +111,15 @@ def add_dependencies(window, array=None):
 	update_window_height(window['__main__'], window['-dependencies-'])
 	button_pointer()
 
+def load_requirements(window, file):
+	with open(file, 'r') as f:
+		requires = map(lambda x: x.strip(), f.readlines())
+		add_dependencies(window, requires)
+
 button_pointer()
 dep_index = infinite(1)
 showing = False
+if os.path.exists("requirements.txt"): load_requirements(window, "requirements.txt")
 
 while True:
 	event, values = window.read()
@@ -135,6 +141,15 @@ while True:
 			window["password_text"].update("Your API token:   ")
 		else:
 			window["password_text"].update("Your password:   ")
+
+	elif event == "folder":
+		req_file = os.path.join(values["folder"], "requirements.txt")
+		if os.path.exists(req_file):
+			load_requirements(window, req_file)
+
+	elif event == "Select file::requirements":
+		file = askopenfilename(filetypes=[("Requirements", "*.txt"), ("All files", "*.*")])
+		if file: load_requirements(window, file)
 
 	elif event == "add_dependency":
 		add_dependencies(window)
@@ -160,7 +175,7 @@ upload_to_test_pypi = values["test_pypi"]
 username = values["username"]
 password = values["password"]
 userlogin = "__token__" if values["token"] else values["username"]
-dependencies = {value for key, value in values.items() if isinstance(key, tuple) and 'dependency' in key[0] and value}
+dependencies = {value.strip() for key, value in values.items() if isinstance(key, tuple) and 'dependency' in key[0] and value.strip()}
 
 delete_temp_files = False
 if values["delete_yes"] == True:
@@ -200,10 +215,6 @@ if len(dependencies) > 0:
 	comand += "	install_requires=["
 	comand += ', '.join(f'"{item}"' for item in dependencies)
 	comand += "],\n"
-elif os.path.exists('requirements.txt'):
-	with open('requirements.txt', 'r') as file:
-		required = file.readlines()
-		comand += f"	install_requires={required},\n"
 
 comand += "	include_package_data=True,\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
