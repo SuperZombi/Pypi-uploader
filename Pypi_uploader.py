@@ -42,7 +42,7 @@ def load_project(window, filename):
 				add_dependencies(window, value)
 
 def save_project(filename, data):
-	allowed_keys = ['folder', 'package_name', 'version', 'description', 'readme', 'username', 'email', 'github']
+	allowed_keys = ['folder', 'package_name', 'version', 'description', 'readme', 'username', 'email', 'github', 'docs', 'python_ver']
 	final = {key: value for key, value in data.items() if key in allowed_keys and value}
 
 	dependencies = {value for key, value in data.items() if isinstance(key, tuple) and 'dependency' in key[0] and value}
@@ -70,9 +70,11 @@ main = [[sg.T("Select project folder: ", font='16'), sg.FolderBrowse("Browse", t
 		[sg.T("Your password:   ", font='12', key="password_text"), sg.Input("", size=(26,1), key="password", password_char='*'), sg.B("Show", key="show-hide")],
 		[sg.Checkbox("token", font='12', key="token", enable_events=True)],
 		[sg.T("Your email:          ", font='12'), sg.Input("", size=(26,1), key="email")],
-		[sg.T("Github repository: ", font='12'), sg.Input("", size=(26,1), key="github"), sg.T("(Optional)", text_color="yellow", font='Arial 12')],[sg.T("")],
+		[sg.T("Github repository: ", font='12'), sg.Input("", size=(26,1), key="github"), sg.T("(Optional)", text_color="yellow", font='Arial 12')],
+		[sg.T("Documentation:    ", font='12'), sg.Input("", size=(26,1), key="docs"), sg.T("(Optional)", text_color="yellow", font='Arial 12')],[sg.T("")],
 		[sg.T("Required Dependencies: ", font='12'), sg.Button(' + ', key="add_dependency")],
 		[sg.Col([], scrollable=True, vertical_scroll_only=True, size=(500, 0), key='-dependencies-')],[sg.T("")],
+		[sg.T("Python version: ", font='12'), sg.Input('{0[0]}.{0[1]}'.format(sys.version_info), size=(10,1), key="python_ver")],
 		[sg.T("Delete all created files, folders and archives after upload?", font='Segoe 14')],
 		[sg.Radio("Yes", 2, default=False, key="delete_yes", font='Segoe 12'), sg.Radio("No", 2, default=True, key="delete_no", font='Segoe 12')],
 		[sg.Push(), sg.OK("Upload", font='12'), sg.Push()]]
@@ -192,8 +194,13 @@ for i in range (len(path)-1):
 
 comand = "import setuptools\n"
 if values["readme"] != "":
-	comand += "with open(r'" + str(values["readme"].replace("/", "\\")) + "', 'r', encoding='utf-8') as fh:\n"
+	with open(values["readme"], 'r', encoding='utf-8') as fh:
+		long_description = fh.read()
+	with open('README.md', 'w', encoding='utf-8') as fh:
+		fh.write(long_description)
+	comand += "with open('README.md', 'r', encoding='utf-8') as fh:\n"
 	comand += "	long_description = fh.read()\n"
+
 comand += "\n"
 comand += "setuptools.setup(\n"
 comand += "	name='" + str(values["package_name"]) + "',\n"
@@ -209,6 +216,9 @@ if values["readme"] != "":
 if values["github"] != "":
 	comand += "	url='" + str(values["github"]) + "',\n"
 
+if values["docs"] != "":
+	comand += "	project_urls={\n		'Documentation': '" + str(values["docs"]) + "',\n	},\n"
+
 comand += "	packages=['" + str(path[len(path)-1]) + "'],\n"
 
 if len(dependencies) > 0:
@@ -218,7 +228,12 @@ if len(dependencies) > 0:
 
 comand += "	include_package_data=True,\n"
 comand += '	classifiers=[\n		"Programming Language :: Python :: 3",\n		"License :: OSI Approved :: MIT License",\n		"Operating System :: OS Independent",\n	],\n'
-comand += "	python_requires='>=3.6',\n)"
+
+if values["python_ver"] != "":
+	comand += "	python_requires='>="+str(values["python_ver"])+"',\n"
+else:
+	comand += "	python_requires='>=3.6',\n"
+comand += ")"
 
 
 window.close()
@@ -250,10 +265,9 @@ window.Refresh()
 
 
 if upload_to_pypi:
-	os.system("python -m twine upload dist/* -u " + str(userlogin) + " -p " + str(password))
+	result = os.system("python -m twine upload dist/* -u " + str(userlogin) + " -p " + str(password))
 else:
-	os.system("python -m twine upload --repository testpypi dist/* -u " + str(userlogin) + " -p " + str(password))
-
+	result = os.system("python -m twine upload --repository testpypi dist/* -u " + str(userlogin) + " -p " + str(password))
 
 if delete_temp_files:
 	window['text'].update("Removing temporary files...")
@@ -261,15 +275,17 @@ if delete_temp_files:
 
 	shutil.rmtree('build')
 	shutil.rmtree("dist")
-	shutil.rmtree(str(package_name) + ".egg-info")
 	os.remove(str(folder) + "setup.cfg")
 	os.remove(str(folder) + "setup.py")
 	os.remove(str(folder) + "MANIFEST.in")
+	shutil.rmtree(str(package_name) + ".egg-info")
 
-window['text'].update("Uploaded successfully!")
+if result == 0:
+	window['text'].update("Uploaded successfully!")
+else:
+	window['text'].update("An error occurred!", text_color="red")
+
 window.Refresh()
-
-print("\nUploaded successfully!")
 while True:
 	event, values = window.read()
 	if event == sg.WIN_CLOSED:
