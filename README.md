@@ -3,7 +3,7 @@
 
 </br>
 
-<a href="README_RU.md" ><img src="https://emojio.ru/images/twitter-64/1f1f7-1f1fa.png" width="30" height="30"></img>Читать на Русском</a>
+<a href="README_RU.md"><img src="https://upload.wikimedia.org/wikipedia/commons/f/f3/Flag_of_Russia.svg" width="30" height="30"></img> Читать на Русском</a>
 </br></br>
 
 This program is written using the <a href="https://pypi.org/project/PySimpleGUI/">PySimpleGUI</a> library.
