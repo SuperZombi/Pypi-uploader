@@ -2,7 +2,7 @@
 #### Загружайте свои библиотеки Python на PyPi с помощью красивого интерфейса.
 
 </br>
-<a href="README.md" ><img src="https://emojio.ru/images/twitter-64/1f1fa-1f1f8.png" width="30" height="30"></img>Read in English</a>
+<a href="README.md"><img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg" width="30"></img> Read in English</a>
 </br></br>
 
 Эта программа написана с помощью библиотеки <a href="https://pypi.org/project/PySimpleGUI/">PySimpleGUI</a>.
