@@ -4,26 +4,14 @@ import shutil
 from time import sleep
 import json
 from tkinter.filedialog import askopenfilename, asksaveasfilename
-try:
-	import PySimpleGUI as sg
-except:
-	os.system("pip install pysimplegui")
-	import PySimpleGUI as sg
 
-try:
-	import setuptools
-except:
-	os.system("pip install setuptools")
+this_require = ["FreeSimpleGUI", "setuptools", "twine", "wheel"]
+os.system(f'pip install --upgrade {" ".join(this_require)}')
 
-try:
-	import twine
-except:
-	os.system("pip install twine")
-
-try:
-	import wheel
-except:
-	os.system("pip install wheel")
+import FreeSimpleGUI as sg
+import setuptools
+import twine
+import wheel
 
 
 def infinite(start=0):
