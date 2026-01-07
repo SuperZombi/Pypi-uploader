@@ -1,4 +1,4 @@
-# Pypi-uploader
+# pypi-uploader
 #### Upload your Python libraries to PyPi with a beautiful interface.
 
 </br>
